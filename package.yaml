@@ -1,0 +1,49 @@
+name:                todo-list
+version:             0.1.0.0
+
+dependencies:
+- base >= 4.7 && < 5
+
+library:
+  source-dirs: src
+  default-extensions:
+    - OverloadedStrings
+    - GeneralizedNewtypeDeriving
+  dependencies:
+    - bytestring
+    - containers
+    - interpolate
+    - megaparsec
+    - parser-combinators
+    - transformers
+    - strict-io
+
+executables:
+  application:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+      - -Wall
+      - -Wextra
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - todo-list
+tests:
+  solution-test:
+    main:                Driver.hs
+    source-dirs:         test
+    ghc-options:
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
+    dependencies:
+      - todo-list
+      - HUnit
+      - QuickCheck
+      - tasty
+      - tasty-hunit
+      - tasty-hunit-adapter
+      - tasty-discover >= 4.2.1
+      - random

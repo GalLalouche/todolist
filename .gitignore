@@ -1,0 +1,6 @@
+.stack-work/
+todo-list.cabal
+*~
+.idea/
+samples/
+*.iml
