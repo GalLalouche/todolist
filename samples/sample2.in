@@ -1,0 +1,10 @@
+9
+add "Buy bread" #groceries
+add "buy Milk" #groceries
+add "Call parents" #relative5
+add "call Parents about Bread" #Relative5 #Groceries
+search #groceries #relative5
+search call bread
+search call #groceries
+done 3
+search #groceries #relative5

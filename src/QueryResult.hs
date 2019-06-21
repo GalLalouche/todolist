@@ -5,6 +5,7 @@ module QueryResult
 
 import qualified Data.ByteString.Char8 as B
 import Data.String (fromString)
+import Data.List (intercalate)
 
 import Types (Description (..), Index (..), Tag (..), TodoItem (..))
 
@@ -12,6 +13,7 @@ data QueryResult
   = Added Index
   | Done
   | Found [TodoItem]
+  | FoundIndex [Index]
   deriving (Show, Eq)
 
 toBytestring :: QueryResult -> B.ByteString
@@ -31,3 +33,9 @@ toBytestring result = case result of
         <> foldMap showTag tags
         where
           showTag (Tag tag) = " #" <> tag
+  FoundIndex indices ->
+    fromString (show (length indices) ++ " item(s) found")
+    <> foldMap itemToBytestring indices
+    where
+      itemToBytestring (Index index) = "\n" <> fromString (show index)
+
