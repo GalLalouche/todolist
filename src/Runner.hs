@@ -19,11 +19,9 @@ performQuery :: (MonadTodoList m, MonadIO m) => Query -> m QueryResult
 performQuery (Add d tags) = do
   index <- add d tags
   return $ Added index
-
 performQuery (MakeDone index) = do
   done index
   return Done
-
 performQuery (Search params) = do
   items <- search params
   return $ Found items
@@ -37,3 +35,4 @@ runNQueries n =
       Right parsedQuery -> do
         result <- performQuery parsedQuery
         liftIO $ B.putStrLn (toBytestring result)
+        liftIO $ hFlush stdout -- enforce strictness
