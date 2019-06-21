@@ -6,7 +6,7 @@ module Query
 import Control.Monad (void)
 import qualified Control.Monad.Combinators.NonEmpty as NE
 import qualified Data.ByteString.Char8 as B
-import Data.Char (chr, isLetter, isPrint)
+import Data.Char (chr, isLetter, isDigit, isPrint)
 import Data.Either (partitionEithers)
 import Data.Void (Void)
 import Data.Word (Word8)
@@ -69,4 +69,4 @@ letterStringParser :: Parser SearchWord
 letterStringParser = SearchWord <$> word
 
 word :: Parser B.ByteString
-word = takeWhile1P Nothing (isLetter . toChar)
+word = takeWhile1P Nothing (\c -> isLetter (toChar c) || isDigit (toChar c))
