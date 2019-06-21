@@ -9,7 +9,6 @@ module Types
   ) where
 
 import Data.ByteString.Char8 (ByteString)
-import Data.List.NonEmpty (NonEmpty)
 
 newtype Index = Index { getIndex :: Word }
   deriving (Show, Eq, Enum, Bounded, Ord)

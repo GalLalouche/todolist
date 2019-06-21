@@ -3,17 +3,8 @@ module QueryResult
   , toBytestring
   ) where
 
-import Control.Monad (void)
-import qualified Control.Monad.Combinators.NonEmpty as NE
 import qualified Data.ByteString.Char8 as B
-import Data.Char (chr, isLetter, isPrint)
-import Data.Either (partitionEithers)
 import Data.String (fromString)
-import Data.Void (Void)
-import Data.Word (Word8)
-import Text.Megaparsec
-import Text.Megaparsec.Byte
-import qualified Text.Megaparsec.Byte.Lexer as L
 
 import Types (Description (..), Index (..), Tag (..), TodoItem (..))
 

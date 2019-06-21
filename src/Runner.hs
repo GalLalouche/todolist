@@ -3,11 +3,9 @@ module Runner
   , runNQueries
   ) where
 
-import Control.Monad (forM_, replicateM_)
+import Control.Monad (replicateM_)
 import Control.Monad.IO.Class (MonadIO, liftIO)
 import qualified Data.ByteString.Char8 as B
-import qualified Data.List.NonEmpty as NE
-import Data.Maybe (fromJust)
 import System.IO (hFlush, stdout)
 import Text.Megaparsec (parse)
 
