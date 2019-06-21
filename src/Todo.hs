@@ -1,4 +1,4 @@
-{-# LANGUAGE QuasiQuotes, InstanceSigs, ScopedTypeVariables #-}
+{-# LANGUAGE InstanceSigs, ScopedTypeVariables #-}
 
 module Todo
   ( TodoListM
@@ -16,7 +16,6 @@ import Data.List (intersect, intercalate, isSubsequenceOf)
 import Data.List.NonEmpty (toList)
 import qualified Data.Map.Strict as M
 import Data.Maybe(maybe)
-import Data.String.Interpolate (i)
 
 import Types (MonadTodoList (..), TodoItem (..), Description(..), Index(..), Tag(..), SearchParams(..), SearchWord(..))
 
@@ -41,7 +40,6 @@ instance MonadTodoList TodoListM where
   add desc tags = TodoListM $ do
     m <- itemsByIndex <$> get
     i <- gets nextIndex
-    liftIO $ print i
     let newItem = TodoItem (Index i) desc tags
     modify $ addItem newItem
     return $ Index i where
@@ -50,9 +48,7 @@ instance MonadTodoList TodoListM where
         in TodoList updatedMap (lastIndex + 1)
 
   done :: Index -> TodoListM ()
-  done index = TodoListM $ do
-    modify $ markDone $ getIndex index
-    liftIO $ putStrLn "done" where
+  done index = TodoListM $ modify $ markDone $ getIndex index where
       -- This could have been done using lenses but it's a bit of an overkill here.
       markDone index (TodoList items lastIndex) = TodoList (M.delete index items) lastIndex
 
@@ -60,8 +56,6 @@ instance MonadTodoList TodoListM where
   search sp = TodoListM $ do
     descElems <- gets $ fmap snd . M.toDescList . itemsByIndex
     let filtered = filter (matches sp) descElems
-    liftIO $ putStrLn [i|#{length filtered} item(s) found|]
-    liftIO $ forM_ filtered printIt
     return filtered where
       matches :: SearchParams -> TodoItem -> Bool
       matches (SearchParams words tags) (TodoItem _ d t) = wordsMatch (getDescription d) words && tagsMatch t tags where
@@ -70,9 +64,4 @@ instance MonadTodoList TodoListM where
         tagsMatch existingTags = all (hasMatchingTag existingTags)
         hasMatchingTag existingTags queryTag = any (tagMatches queryTag) existingTags
         tagMatches queryTag existingTag = isSubsequenceOf (unpack $ getTag queryTag) (unpack $ getTag existingTag)
-
-      printIt :: TodoItem -> IO ()
-      printIt (TodoItem index d t) = putStrLn [i|#{getIndex index} #{getDescription d} #{showTags t}|] where
-        showTags :: [Tag] -> String
-        showTags = unwords . map (("#" ++ ) . unpack . getTag)
 
