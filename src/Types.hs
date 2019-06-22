@@ -36,4 +36,4 @@ data TodoItem = TodoItem
 class MonadTodoList m where
   add    :: Description -> [Tag] -> m Index
   done   :: Index -> m ()
-  search :: SearchParams -> m [TodoItem]
+  search :: SearchParams -> m [Index]

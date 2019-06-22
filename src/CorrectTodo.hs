@@ -1,7 +1,7 @@
 {-# LANGUAGE InstanceSigs        #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Todo
+module CorrectTodo
   ( TodoListM
   , runTodoList
   ) where
@@ -25,9 +25,6 @@ data TodoList =
     }
   deriving (Show, Eq)
 
-emptyTodoList :: TodoList
-emptyTodoList = TodoList M.empty 0
-
 index :: TodoItem -> Word
 index = getIndex . tiIndex
 
@@ -38,7 +35,9 @@ newtype TodoListM a =
   deriving (Functor, Applicative, Monad, MonadIO)
 
 runTodoList :: TodoListM a -> IO ()
-runTodoList = void . flip runStateT emptyTodoList . runTodoListM
+runTodoList =
+  let emptyTodoList = TodoList M.empty 0
+   in void . flip runStateT emptyTodoList . runTodoListM
 
 instance MonadTodoList TodoListM where
   add :: Description -> [Tag] -> TodoListM Index
@@ -49,8 +48,7 @@ instance MonadTodoList TodoListM where
       return $ Index i
     where
       addItem newItem (TodoList items lastIndex) =
-        let updatedMap = M.insert (index newItem) newItem items
-         in TodoList updatedMap (lastIndex + 1)
+        let updatedMap = M.insert (index newItem) newItem items in TodoList updatedMap (lastIndex + 1)
 
   done :: Index -> TodoListM ()
   done index = TodoListM $ modify $ markDone $ getIndex index
@@ -58,11 +56,11 @@ instance MonadTodoList TodoListM where
     where
       markDone index (TodoList items lastIndex) = TodoList (M.delete index items) lastIndex
 
-  search :: SearchParams -> TodoListM [TodoItem]
+  search :: SearchParams -> TodoListM [Index]
   search sp =
     TodoListM $ do
       descElems <- gets $ fmap snd . M.toDescList . itemsByIndex
-      return $ filter (matches sp) descElems
+      return $ map tiIndex $ filter (matches sp) descElems
     where
       matches :: SearchParams -> TodoItem -> Bool
       matches (SearchParams queryWords queryTags) (TodoItem _ (Description d) itemTags) =
@@ -70,9 +68,7 @@ instance MonadTodoList TodoListM where
         where
           wordsMatch desc = all (wordMatches desc) . map getSearchWord
           wordMatches = flip unpackIsSubsequenceOf
-
           tagsMatch existingTags = all (hasMatchingTag existingTags)
           hasMatchingTag existingTags queryTag = any (tagMatches queryTag) existingTags
           tagMatches = unpackIsSubsequenceOf
-
           unpackIsSubsequenceOf a b = isSubsequenceOf (unpack a) (unpack b)

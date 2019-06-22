@@ -26,7 +26,7 @@ performQuery (MakeDone index) = do
   return Done
 performQuery (Search params) = do
   items <- search params
-  return $ Found items
+  return $ FoundIndex items
 
 -- Modified from http://www.brool.com/post/haskell-performance-lowercase/
 ctype_lower = listArray (0, 255) (map (BI.c2w . toLower) ['\0' .. '\255']) :: UArray Word8 Word8

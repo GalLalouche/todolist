@@ -17,6 +17,7 @@ library:
     - megaparsec
     - parser-combinators
     - transformers
+    - unordered-containers
 
 executables:
   application:
